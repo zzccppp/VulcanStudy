@@ -10,9 +10,11 @@
 #include <glm/vec4.hpp>
 #include <glm/mat4x4.hpp>
 #include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 
 #include <stdexcept>
 #include <set>
+#include <chrono> //日期和时间库
 #include <vector>
 #include <optional>
 #include <array>
@@ -83,6 +85,12 @@ struct Vertex {
     }
 
 };
+
+typedef struct TransformMatrixUniformBufferObject{
+    glm::mat4 model;
+    glm::mat4 view;
+    glm::mat4 proj;
+}trans_ubo;
 
 //------------ Application Defined Here
 
@@ -170,6 +178,8 @@ private:
 
     VkRenderPass renderPass;
 
+    VkDescriptorSetLayout descriptorSetLayout;
+
     VkPipeline graphicsPipeline;
 
     std::vector<VkFramebuffer> swapChainFramebuffers;
@@ -195,6 +205,12 @@ private:
 
     VkBuffer indexBuffer;
     VkDeviceMemory indexBufferMemory;
+
+    std::vector<VkBuffer> uniformBuffers;
+    std::vector<VkDeviceMemory> uniformBuffersMemory;
+
+    VkDescriptorPool descriptorPool;
+    std::vector<VkDescriptorSet> descriptorSets;
 
     void initWindow();
 
@@ -254,7 +270,7 @@ private:
 
     void recreateSwapChain();
 
-    void cleanupSwapChain();
+    void cleanUpSwapChain();
 
     static void framebufferResizeCallback(GLFWwindow *window, int width,
                                           int height);
@@ -270,6 +286,15 @@ private:
 
     void createIndexBuffer();
 
+    void createDescriptorSetLayout();
+
+    void createUniformBuffers();
+
+    void updateUniformBuffer(uint32_t index);
+
+    void createDescriptorPool();
+
+    void createDescriptorSets();
 };
 
 
